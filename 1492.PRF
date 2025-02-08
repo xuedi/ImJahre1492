@@ -1,0 +1,77 @@
+Anfang:
+'***************************************************************
+'************************* Allgemein ***************************
+'-- Normale --
+declare stadtname$[21],Stadtbild$[21],Citty$[21,21],StadtPos%[22,1]
+declare Zeit%,i%,ende%,ret%,MainEnde%,ProcEnde%
+Declare _Button%[20] '7
+declare temp$[10],temp%[10],temp%,SpielerNummer%
+declare Zielhafen%[3],Standtort%[3]
+declare SpielerName$[3],SpielerMax%
+declare X%[3],Y%[3],Xtemp%[3],Ytemp%[3]
+declare NavPointX%[4,20]
+declare NavPointY%[4,20]
+'                 |  |
+'                 |  |
+' Spieler Nr(0123)   |
+' NavPoint Nr -------
+Declare Schiff%[3,30]
+'               |  |
+'               |  |
+'  Spieler Nr---   |
+'  Schiff Nr ------
+'***************************************************************
+'************************* Wirtschaftlich **********************
+Declare Produkt$[100]
+Declare Produkt$[100,2] '0=Preis,1=
+
+$I declare.inc
+$I untermenue.inc
+$I proc.inc
+$I Timer.inc
+'------------ Werte Setzen ------------
+Zeit%=3
+$I Start.inc
+
+'***************************************************************
+'************************ Spielstart ***************************
+'***************************************************************
+Start:
+UseFont "",16,6,1,0,0
+case Zeit% = 1: loadbmp "Bilder/map1.BG",0,0;0
+case Zeit% = 2: loadbmp "Bilder/map2.BG",0,0;0
+case Zeit% = 3: loadbmp "Bilder/map3.BG",0,0;0
+
+ende%=1
+MLoadBMP "Main.bg"
+MainEnde% = @Create("Button",%HWnd,"Ende",50,460,80,20)
+whilenot @GetFocus(MainEnde%)
+    '***************************** Schiffe Fahren *************************
+
+    '***************************** Ziel Erkennen **************************
+    i%=0
+    whilenot i%=(SpielerMax%+1)
+        MCopyBmp X%[i%],Y%[i%]-10,10 > X%[i%],Y%[i%];0
+        case X%[i%] < StadtPos%[Zielhafen%[i%],0] : X%[i%] = X%[i%] + 1
+        case X%[i%] > StadtPos%[Zielhafen%[i%],0] : X%[i%] = X%[i%] - 1
+        case Y%[i%] < StadtPos%[Zielhafen%[i%],1] : Y%[i%] = Y%[i%] + 1
+        case Y%[i%] > StadtPos%[Zielhafen%[i%],1] : Y%[i%] = Y%[i%] - 1
+        LoadBmp @Add$("Player",@Add$(i%,".bg")), X%[i%],Y%[i%] ;-1
+        if @and(StadtPos%[Zielhafen%[i%],0] = X%[i%],StadtPos%[Zielhafen%[i%],1] = Y%[i%])
+            Stadt i%
+            Standtort%[i%] = Zielhafen%[i%],0]
+        endif
+        i%=i%+1
+    wend
+    delay 1
+endwhile
+destroywindow(MainEnde%)
+end
+laden:
+playsound "klick.sou", 0
+end
+Ende:
+playsound "klick.sou",0
+playsound "ende.sou", 0
+end
+
